@@ -1,11 +1,13 @@
 package com.example.user.weathertestapp;
 
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.json.JSONArray;
+import com.example.user.weathertestapp.util.ServerUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,6 +22,9 @@ public class MainActivity extends BaseActivity {
     private android.widget.TextView minTemperatureTxt;
     private android.widget.TextView windTxt;
     private android.widget.TextView windSpeedTxt;
+    private android.widget.EditText latitudeEdt;
+    private android.widget.EditText longitudeEdt;
+    private android.widget.Button okBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,102 +37,52 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void setUpEvents() {
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ServerUtil.getCurrentWeatherFromServer(mContext, new ServerUtil.JsonResponseHandler() {
+                    @Override
+                    public void onResponse(JSONObject json) {
+//                서버에서 응답이 오면 자동으로 실행되는 부분
+//                json이 재료로 날아오는걸 분석해서 화면에 뿌려주기
+                        try {
+                            JSONObject firstObj = json.getJSONObject("weather").getJSONArray("minutely").getJSONObject(0);
 
+                            String location = firstObj.getJSONObject("station").getString("name");
+                            locationTxt.setText(location);
+
+                            String sky = firstObj.getJSONObject("sky").getString("name");
+                            weatherTxt.setText(sky);
+
+                            String temperature = firstObj.getJSONObject("temperature").getString("tc");
+                            float tc = Float.parseFloat(temperature);
+                            String tcStr = String.format(Locale.KOREA, "%.1f ℃", tc);
+                            temperatureTxt.setText(tcStr);
+                            String temMax = firstObj.getJSONObject("temperature").getString("tmax");
+                            float tmax = Float.parseFloat(temMax);
+                            String tmaxStr = String.format(Locale.KOREA, "%.1f ℃", tmax);
+                            maxTemperatureTxt.setText(tmaxStr);
+                            String temMin = firstObj.getJSONObject("temperature").getString("tmin");
+                            float tmin = Float.parseFloat(temMin);
+                            String tminStr = String.format(Locale.KOREA, "%.1f ℃", tmin);
+                            minTemperatureTxt.setText(tminStr);
+
+                            String wdir = firstObj.getJSONObject("wind").getString("wdir");
+                            windTxt.setText(wdir);
+                            String wspd = firstObj.getJSONObject("wind").getString("wspd");
+                            windSpeedTxt.setText(wspd);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, latitudeEdt.getText().toString(), longitudeEdt.getText().toString());
+            }
+        });
     }
 
     @Override
     public void setValues() {
-        String jsonStr = "{\n" +
-                "    \"weather\":{\n" +
-                "        \"minutely\":[\n" +
-                "            {\n" +
-                "                \"station\":{\n" +
-                "                    \"longitude\":\"127.06036\",\n" +
-                "                    \"latitude\":\"37.58463\",\n" +
-                "                    \"name\":\"동대문\",\n" +
-                "                    \"id\":\"408\",\n" +
-                "                    \"type\":\"KMA\"\n" +
-                "                },\n" +
-                "                \"wind\":{\n" +
-                "                    \"wdir\":\"179.50\",\n" +
-                "                    \"wspd\":\"1.60\"\n" +
-                "                },\n" +
-                "                \"precipitation\":{\n" +
-                "                    \"sinceOntime\":\"0.00\",\n" +
-                "                    \"type\":\"0\"\n" +
-                "                },\n" +
-                "                \"sky\":{\n" +
-                "                    \"code\":\"SKY_A01\",\n" +
-                "                    \"name\":\"맑음\"\n" +
-                "                },\n" +
-                "                \"rain\":{\n" +
-                "                    \"sinceOntime\":\"0.00\",\n" +
-                "                    \"sinceMidnight\":\"0.00\",\n" +
-                "                    \"last10min\":\"0.00\",\n" +
-                "                    \"last15min\":\"0.00\",\n" +
-                "                    \"last30min\":\"0.00\",\n" +
-                "                    \"last1hour\":\"0.00\",\n" +
-                "                    \"last6hour\":\"0.00\",\n" +
-                "                    \"last12hour\":\"0.00\",\n" +
-                "                    \"last24hour\":\"0.00\"\n" +
-                "                },\n" +
-                "                \"temperature\":{\n" +
-                "                    \"tc\":\"25.50\",\n" +
-                "                    \"tmax\":\"28.00\",\n" +
-                "                    \"tmin\":\"17.00\"\n" +
-                "                },\n" +
-                "                \"humidity\":\"40.60\",\n" +
-                "                \"pressure\":{\n" +
-                "                    \"surface\":\"\",\n" +
-                "                    \"seaLevel\":\"\"\n" +
-                "                },\n" +
-                "                \"lightning\":\"0\",\n" +
-                "                \"timeObservation\":\"2017-09-01 12:08:00\"\n" +
-                "            }\n" +
-                "        ]\n" +
-                "    },\n" +
-                "    \"common\":{\n" +
-                "        \"alertYn\":\"Y\",\n" +
-                "        \"stormYn\":\"N\"\n" +
-                "    },\n" +
-                "    \"result\":{\n" +
-                "        \"code\":9200,\n" +
-                "        \"requestUrl\":\"/weather/current/minutely?lon=127.047553&village=&county=&stnid=&lat=37.613033&version=1&city=\",\n" +
-                "        \"message\":\"성공\"\n" +
-                "    }\n" +
-                "}";
 
-        Log.d("JSON", jsonStr);
-
-        try {
-            JSONObject json = new JSONObject(jsonStr);
-//            1. 날씨 보여주는 동네 이름 추출 : String 변수 저장
-            JSONObject weather = json.getJSONObject("weather");
-            JSONArray minutely = weather.getJSONArray("minutely");
-            JSONObject firstObj = minutely.getJSONObject(0);
-            JSONObject station = firstObj.getJSONObject("station");
-            String name = String.format(Locale.KOREA, "%s구", station.getString("name"));
-//            Toast.makeText(mContext, name + "", Toast.LENGTH_SHORT).show();
-            locationTxt.setText(name);
-
-            JSONObject sky = firstObj.getJSONObject("sky");
-            weatherTxt.setText(sky.getString("name"));
-
-            JSONObject temperature = firstObj.getJSONObject("temperature");
-            String tc = String.format(Locale.KOREA, "%s 도", temperature.getString("tc"));
-            temperatureTxt.setText(tc);
-            String tmax = String.format(Locale.KOREA, "%s 도", temperature.getString("tmax"));
-            maxTemperatureTxt.setText(tmax);
-            String tmin = String.format(Locale.KOREA, "%s 도", temperature.getString("tmin"));
-            minTemperatureTxt.setText(tmin);
-
-            JSONObject wind = firstObj.getJSONObject("wind");
-            windTxt.setText(wind.getString("wdir"));
-            windSpeedTxt.setText(wind.getString("wspd"));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -139,5 +94,8 @@ public class MainActivity extends BaseActivity {
         this.temperatureTxt = (TextView) findViewById(R.id.temperatureTxt);
         this.weatherTxt = (TextView) findViewById(R.id.weatherTxt);
         this.locationTxt = (TextView) findViewById(R.id.locationTxt);
+        this.okBtn = (Button) findViewById(R.id.okBtn);
+        this.longitudeEdt = (EditText) findViewById(R.id.longitudeEdt);
+        this.latitudeEdt = (EditText) findViewById(R.id.latitudeEdt);
     }
 }
