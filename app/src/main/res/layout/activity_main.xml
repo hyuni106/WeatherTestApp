@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    tools:context="com.example.user.weathertestapp.MainActivity">
+
+    <TextView
+        android:id="@+id/locationTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="지역이름"
+        android:textSize="30sp"/>
+
+    <TextView
+        android:id="@+id/weatherTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="현재 하늘(Ex. 맑음)"/>
+
+    <TextView
+        android:id="@+id/temperatureTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="현재 온도(Ex. 28.06도)"/>
+
+    <TextView
+        android:id="@+id/maxTemperatureTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="최고 온도(Ex. 28.06도)"/>
+
+    <TextView
+        android:id="@+id/minTemperatureTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="최저 온도(E. 28.06도)"/>
+
+    <TextView
+        android:id="@+id/windTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="바람 각도(Ex. 300.1)"/>
+
+    <TextView
+        android:id="@+id/windSpeedTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="풍속(Ex. 1.60m)"/>
+
+</LinearLayout>
